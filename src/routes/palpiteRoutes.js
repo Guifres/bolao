@@ -25,7 +25,7 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
-module.exports = router;
+// Gerar ranking
 router.get("/ranking", async (req, res) => {
     try {
         const ranking = await prisma.palpite.groupBy({
@@ -40,3 +40,5 @@ router.get("/ranking", async (req, res) => {
         res.status(500).json({ error: "Erro ao gerar ranking" });
     }
 });
+
+module.exports = router;

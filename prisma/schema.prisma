@@ -16,7 +16,7 @@ model Usuario {
   email     String    @unique
   password  String
   createdAt DateTime  @default(now())
-  palpites  Palpite[] @relation("UsuarioPalpites")  // Relacionamento inverso com Palpite
+  palpites  Palpite[] // Este campo define a relação inversa com o modelo Palpite
 }
 
 
@@ -25,7 +25,16 @@ model Jogo {
   timeCasa    String
   timeFora    String
   data        DateTime
-  palpites    Palpite[] @relation("JogoPalpites")  // Relacionamento inverso com Palpite
+  palpites    Palpite[] // Este campo define a relação inversa com o modelo Palpite
 }
 
+// Definição do datasource (banco de dados)
+datasource db {
+  provider = "postgresql"  // Ou o banco que você estiver usando, como "mysql" ou "sqlite"
+  url      = env("DATABASE_URL")  // A URL de conexão do banco de dados
+}
 
+// Definição do gerador (geração do cliente Prisma)
+generator client {
+  provider = "prisma-client-js"
+}
