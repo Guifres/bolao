@@ -1,0 +1,31 @@
+model Palpite {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  jogoId    Int
+  placarCasa Int
+  placarFora Int
+  createdAt DateTime @default(now())
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  jogo      Jogo     @relation(fields: [jogoId], references: [id])
+}
+
+model Usuario {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  palpites  Palpite[] @relation("UsuarioPalpites")  // Relacionamento inverso com Palpite
+}
+
+
+model Jogo {
+  id          Int       @id @default(autoincrement())
+  timeCasa    String
+  timeFora    String
+  data        DateTime
+  palpites    Palpite[] @relation("JogoPalpites")  // Relacionamento inverso com Palpite
+}
+
+
