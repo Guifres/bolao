@@ -12,6 +12,8 @@ const pagamentoRoutes = require('./src/routes/pagamentoRoutes');
 
 const app = express();
 
+// 
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -25,6 +27,7 @@ app.use('/api/jogos', jogosRoutes);
 app.use('/api/pagamentos', pagamentoRoutes);
 
 // Iniciando o servidor
-app.listen(3000, () => {
-    console.log("Servidor rodando na porta 3000");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
 });
