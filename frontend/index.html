@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolão de Futebol</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Bolão de Futebol</h1>
+
+    <div class="form-container">
+      <h2>Registrar Palpite</h2>
+      <div>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required />
+      </div>
+      <div>
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" required />
+      </div>
+      <form id="form-palpites">
+        <!-- Primeiro jogo -->
+        <div class="palpite">
+          <div class="time">
+            <img src="assets/time1.jpg" alt="Time 1" />
+            <input type="number" min="0" max="10" id="time1-gols" required />
+          </div>
+          <span>X</span>
+          <div class="time">
+            <img src="assets/time2.jpg" alt="Time 2" />
+            <input type="number" min="0" max="10" id="time2-gols" required />
+          </div>
+        </div>
+
+        <!-- Segundo jogo -->
+        <div class="palpite">
+          <div class="time">
+            <img src="assets/time3.jpg" alt="Time 3" />
+            <input type="number" min="0" max="10" id="time3-gols" required />
+          </div>
+          <span>X</span>
+          <div class="time">
+            <img src="assets/time4.jpg" alt="Time 4" />
+            <input type="number" min="0" max="10" id="time4-gols" required />
+          </div>
+        </div>
+
+        <button type="submit">Registrar Palpite</button>
+      </form>
+    </div>
+
+    <div id="resultados" class="resultados">
+      <h2>Resultados da Rodada</h2>
+      <ul id="lista-resultados"></ul>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
+
