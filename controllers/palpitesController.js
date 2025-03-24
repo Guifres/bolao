@@ -86,12 +86,14 @@ const validarPalpites = async (req, res) => {
         // Ordenar os vencedores por pontos, do maior para o menor
         vencedores.sort((a, b) => b.pontos - a.pontos);
 
+        // Retornar a lista dos vencedores
         res.status(200).json({ vencedores });
     } catch (error) {
         console.error('Erro ao validar palpites:', error);
         res.status(500).json({ mensagem: 'Erro ao validar palpites.' });
     }
 };
+
 
 
 

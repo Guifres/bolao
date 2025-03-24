@@ -32,11 +32,11 @@ app.post('/resultados', async (req, res) => {
 });
 
 // Endpoint para validar palpites considerando o formato JSON do banco de dados
-app.get('/palpites/palpites', async (req, res) => {
+app.get('/palpites/vencedores', async (req, res) => {
     try {
         // Recuperar os resultados dos jogos
-        const resultadoJogos = await db.query('SELECT jsonb_array_elements(resultados) AS jogo FROM resultados_rodada');
-        const jogos = resultadoJogos.rows.map(row => row.jogo); // Converte os jogos em um array de objetos
+        const resultadoJogos = await db.query('SELECT * FROM resultados_rodada');
+        const jogos = resultadoJogos.rows[0].resultados; // Converte os jogos em um array de objetos
 
         // Recuperar os palpites dos usuários
         const resultadoPalpites = await db.query('SELECT * FROM palpites');
@@ -47,48 +47,56 @@ app.get('/palpites/palpites', async (req, res) => {
 
         // Loop através dos palpites e comparar com os resultados
         for (const palpite of palpites) {
-            let acertouTodos = true;
+            let pontos = 0;
 
-            for (const jogoPalpite of palpite.palpites) {
-                // Encontre o resultado correto do jogo
+            // Iterando sobre os palpites do usuário
+            for (let i = 0; i < palpite.palpites.length; i++) {
+                const jogoPalpite = palpite.palpites[i];
+
+                // Encontrar o jogo correspondente ao palpite
                 const resultadoReal = jogos.find(jogo => {
-                    const time1 = Object.keys(jogo)[0]; // Exemplo: "ECVitoria"
-                    const time2 = Object.keys(jogo)[1]; // Exemplo: "Juventude"
-                    return (time1 === jogoPalpite.time1 && time2 === jogoPalpite.time2);
+                    const times = Object.keys(jogo);
+                    return times[0] === Object.keys(jogoPalpite)[0] && times[1] === Object.keys(jogoPalpite)[1];
                 });
 
-                if (!resultadoReal) {
-                    console.log(`Não encontrou o jogo entre ${jogoPalpite.time1} e ${jogoPalpite.time2}`);
-                    acertouTodos = false;
-                    break;
-                }
+                // Se não encontrar o jogo real, ignora esse palpite
+                if (!resultadoReal) continue;
 
-                // Verifique os placares
-                const placarRealTime1 = resultadoReal[jogoPalpite.time1];
-                const placarRealTime2 = resultadoReal[jogoPalpite.time2];
+                const time1 = Object.keys(jogoPalpite)[0];
+                const time2 = Object.keys(jogoPalpite)[1];
+                const placarPalpiteTime1 = parseInt(jogoPalpite[time1]);
+                const placarPalpiteTime2 = parseInt(jogoPalpite[time2]);
 
-                if (
-                    parseInt(placarRealTime1) !== jogoPalpite.gols1 ||
-                    parseInt(placarRealTime2) !== jogoPalpite.gols2
+                // Verificar o placar
+                const placarRealTime1 = resultadoReal[time1];
+                const placarRealTime2 = resultadoReal[time2];
+
+                // Comparar o placar dos dois times
+                if (placarPalpiteTime1 === parseInt(placarRealTime1) && placarPalpiteTime2 === parseInt(placarRealTime2)) {
+                    pontos += 3; // Pontuação completa para acerto total
+                } else if (
+                    (placarPalpiteTime1 === parseInt(placarRealTime1) && placarPalpiteTime2 !== parseInt(placarRealTime2)) ||
+                    (placarPalpiteTime1 !== parseInt(placarRealTime1) && placarPalpiteTime2 === parseInt(placarRealTime2))
                 ) {
-                    acertouTodos = false;
-                    break;
+                    pontos += 1; // Pontuação parcial para acerto de um dos times
                 }
             }
 
-            // Se acertou todos os palpites, é um vencedor
-            if (acertouTodos) {
-                vencedores.push({ nome: palpite.nome, telefone: palpite.telefone });
+            // Se o usuário acertou algum palpite, adicione ele aos vencedores
+            if (pontos > 0) {
+                vencedores.push({ nome: palpite.nome, telefone: palpite.telefone, pontos });
             }
         }
 
         // Retorne os vencedores como resposta
-        res.json(vencedores);
+        res.json({ vencedores });
     } catch (error) {
         console.error('Erro ao buscar vencedores:', error);
         res.status(500).json({ error: 'Erro no servidor' });
     }
 });
+
+
 
 
 
