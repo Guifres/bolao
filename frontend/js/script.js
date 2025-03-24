@@ -6,31 +6,71 @@ const listaResultados = document.getElementById("lista-resultados");
 form.addEventListener("submit", async (event) => {
   event.preventDefault(); // Impede o comportamento padrão do formulário
 
+  // pegando os valores de nome telefone
+  const nome = document.getElementById('nome').value
+  const telefone = document.getElementById('telefone').value
+
   // Obtendo os valores dos inputs de gols
   const palpites = [
     {
-      time1: document.getElementById("time1-gols").value,
-      time2: document.getElementById("time2-gols").value,
+      Juventude: document.getElementById("time1-gols").value,
+      ECVitoria: document.getElementById("time2-gols").value,
     },
     {
-      time1: document.getElementById("time3-gols").value,
-      time2: document.getElementById("time4-gols").value,
+      Gremio: document.getElementById("time3-gols").value,
+      AtleticoMg: document.getElementById("time4-gols").value,
+    },
+    {
+      Cruzeiro: document.getElementById("time5-gols").value,
+      Mirasol: document.getElementById("time6-gols").value,
+    },
+    {
+      Palmeiras: document.getElementById("time7-gols").value,
+      Botafogo: document.getElementById("time8-gols").value,
+    },{
+      Bahia: document.getElementById("time9-gols").value,
+      Corinthians: document.getElementById("time10-gols").value,
+    },
+    {
+      Fortaleza: document.getElementById("time11-gols").value,
+      Fluminense: document.getElementById("time12-gols").value,
+    },
+    {
+      SaoPaulo: document.getElementById("time13-gols").value,
+      SportRecife: document.getElementById("time14-gols").value,
+    },
+    {
+      Flamengo: document.getElementById("time15-gols").value,
+      Internacional: document.getElementById("time16-gols").value,
+    },{
+      VascodaGama: document.getElementById("time17-gols").value,
+      Santos: document.getElementById("time18-gols").value,
+    },
+    {
+      Bragantino: document.getElementById("time19-gols").value,
+      CearaSC: document.getElementById("time20-gols").value,
     },
   ];
 
   // Enviar dados para o backend
+
+  const dados = {
+    nome,
+    telefone,
+    palpites,
+  };
+
   try {
     const response = await fetch("http://localhost:5000/palpites/registrar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        nome = , // Aqui você pode pegar o nome do input também
-        telefone: "11912345678", // E o telefone do input
-        palpites: palpites,
-      }),
+      body: JSON.stringify(dados),
     });
+  
+    
+    
 
     const data = await response.json();
     if (response.ok) {
@@ -47,27 +87,33 @@ form.addEventListener("submit", async (event) => {
 });
 
 // Função para buscar os resultados
-async function getResultados() {
+async function obterVencedores() {
   try {
-    const response = await fetch("http://localhost:5000/palpites/listar");
-    const data = await response.json();
+      const response = await fetch('http://localhost:5000/palpites/vencedores');
+      const data = await response.json();
+      
+      const vencedoresDiv = document.getElementById('vencedores');
+      vencedoresDiv.innerHTML = '';  // Limpar o conteúdo anterior
 
-    // Limpar a lista atual de resultados
-    listaResultados.innerHTML = "";
-
-    // Exibir os resultados
-    data.forEach((palpite) => {
-      const li = document.createElement("li");
-      li.textContent = `${palpite.nome}: ${palpite.palpites.map(
-        (item) => `${item.time1} x ${item.time2}`
-      ).join(", ")}`;
-      listaResultados.appendChild(li);
-    });
+      if (data.vencedores.length > 0) {
+          data.vencedores.forEach(vencedor => {
+              const vencedorDiv = document.createElement('div');
+              vencedorDiv.classList.add('vencedor');
+              vencedorDiv.innerHTML = `
+                  <span><strong>Nome:</strong> ${vencedor.nome}</span>
+                  <span><strong>Telefone:</strong> ${vencedor.telefone}</span>
+                  <span><strong>Pontos:</strong> ${vencedor.pontos}</span>
+              `;
+              vencedoresDiv.appendChild(vencedorDiv);
+          });
+      } else {
+          vencedoresDiv.innerHTML = '<p>Nenhum vencedor encontrado.</p>';
+      }
   } catch (error) {
-    console.error("Erro:", error);
+      console.error('Erro ao obter vencedores:', error);
   }
 }
 
 // Carregar os resultados ao iniciar a página
-getResultados();
+obterVencedores();
 
